@@ -1,0 +1,19 @@
+{
+  "name": "noodle",
+  "version": "1.0.0",
+  "description": "discord bot that tracks and updates countdowns to events along with event descriptions",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexanderubieta/noodle.git"
+  },
+  "author": "Alexander Ubieta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexanderubieta/noodle/issues"
+  },
+  "homepage": "https://github.com/alexanderubieta/noodle#readme"
+}
