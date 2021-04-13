@@ -2,6 +2,23 @@ const Discord = require('discord.js');
 const chrono = require('chrono-node');
 const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
+var dict = {
+    "everyone":`@everyone`,
+    "genshin":`@Genshin Impact o(*￣▽￣*)ブ `,
+    "genshin-impact":`@Genshin Impact o(*￣▽￣*)ブ `,
+    "valorant":`@Valorant ψ(｀∇´)ψ`,
+    "roblox":`@Roblox ♪(´▽｀)`,
+    "among":`@Among Us ㄟ(≧◇≦)ㄏ`,
+    "among-us":`@Among Us ㄟ(≧◇≦)ㄏ`,
+    "smash":`@Smash (((o(*ﾟ▽ﾟ*)o)))`,
+    "spaceman":`@Unfortunate Spacemen \`(*>﹏<*)′`,
+    "unfortunate-spaceman":`@Unfortunate Spacemen \`(*>﹏<*)′`,
+    "fortnite":`@Fortnite (๑•̀ㅂ•́)و✧`,
+    "phasmophobia":`@Phasmophobia (⓿_⓿)`,
+    "minecraft":`@Minecraft ( *︾▽︾)`,
+    "content":`@Content ( ͡° ͜ʖ ͡°)`,
+    "birthday":`@Birthday ＼(＾O＾)／`
+};
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -50,6 +67,11 @@ client.on('message', message => {
                 var min;
                 var hour;
                 var day;
+                var at = dict["content"];
+                cur = args.shift().toLowerCase();
+                if(cur!=null && dict[cur]!=null){
+                    at=dict[cur];
+                }
                 var expiring = false;
                 function update() {
                     sec = ((date - Date.now()) / 1000) - 21600;
@@ -118,10 +140,10 @@ client.on('message', message => {
                                 if (day <= 0 && hour <= 0 && min <= 0) {
                                     expiring = true;
                                     setTimeout(function () {
-                                        client.channels.cache.get(id).send(`@everyone`).then(msga => {
+                                        client.channels.cache.get(id).send(at).then(msga => {
                                             setTimeout(function () {
                                                 msga.delete().catch(error => {
-                                                    console.log("@everyone msg was already deleted");
+                                                    console.log("@ msg was already deleted");
                                                 });
                                             }, 86400000);
                                         });
