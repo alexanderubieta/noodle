@@ -1,27 +1,28 @@
-
 const Discord = require('discord.js');
 const chrono = require('chrono-node');
 const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
+var launch;
 var dict = {
-    "everyone":`@everyone`,
-    "genshin":`@Genshin Impact o(*￣▽￣*)ブ `,
-    "genshin-impact":`@Genshin Impact o(*￣▽￣*)ブ `,
-    "valorant":`@Valorant ψ(｀∇´)ψ`,
-    "roblox":`@Roblox ♪(´▽｀)`,
-    "among":`@Among Us ㄟ(≧◇≦)ㄏ`,
-    "among-us":`@Among Us ㄟ(≧◇≦)ㄏ`,
-    "smash":`@Smash (((o(*ﾟ▽ﾟ*)o)))`,
-    "spaceman":`@Unfortunate Spacemen \`(*>﹏<*)′`,
-    "unfortunate-spaceman":`@Unfortunate Spacemen \`(*>﹏<*)′`,
-    "fortnite":`@Fortnite (๑•̀ㅂ•́)و✧`,
-    "phasmophobia":`@Phasmophobia (⓿_⓿)`,
-    "minecraft":`@Minecraft ( *︾▽︾)`,
-    "content":`@Content ( ͡° ͜ʖ ͡°)`,
-    "birthday":`@Birthday ＼(＾O＾)／`
+    "everyone": `<@&813551519529959426>`,
+    "genshin": `<@&765998462684495892>`,
+    "genshin-impact": `<@&765998462684495892>`,
+    "valorant": `<@&739733389250396250>`,
+    "roblox": `<@&739737246890065980>`,
+    "among": `<@&753473946157842512>`,
+    "among-us": `<@&753473946157842512>`,
+    "smash": `<@&774842717627744327>`,
+    "spaceman": `<@&799033561935249458>`,
+    "unfortunate-spaceman": `<@&799033561935249458>`,
+    "fortnite": `<@&800111816785133639>`,
+    "phasmophobia": `<@&814590094567800892>`,
+    "minecraft": `<@&739733579914805368>`,
+    "content": `<@&813551519529959426>`,
+    "birthday": `<@&827107944134737963>`
 };
 
 client.once('ready', () => {
+    launch = Date.now();
     console.log('Ready!');
 });
 
@@ -29,11 +30,55 @@ client.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(prefix.length).trim().split(' ');
     const command = args.shift().toLowerCase();
-    if (command === 'event') {
+    if (command === 'uptime') {
+        var elapsed = chrono.parseDate("Today") - launch;
+        elapsed = (elapsed / 1000) / 60;
+        elapsed = elapsed.toFixed(2);
+        message.channel.send(`I've been online for ${elapsed} minutes`);
+    }
+    else if (command === 'reminder') {
+        if (args.length < 2) {
+            message.channel.send("Error: too few arguments. Send event message in the following format: ```%reminder reminder-name-seperated-by-dashes rolename link/description(optional)```");
+        }
+        else {
+            var cur = args.shift().split('-');
+            var reminderName = "";
+            for (var i = 0; i < cur.length; i++) {
+                reminderName += cur[i] + " ";
+            }
+            cur = args.shift().toLowerCase();
+            var atMention = dict["content"];
+            if (dict[cur]!=null) {
+                atMention=dict[cur];
+            }
+            message.channel.send(`A reminder has been created in this channel for: \`\`\`${reminderName}\`\`\`every day at 11:00 AM Central time.`);
+            cur = "";
+            while(args.length!=0){
+                cur += args.shift()+" ";
+            }
+            var reminderEmbed = new Discord.MessageEmbed()
+                .setTitle(`${reminderName}`)
+                .setDescription(`${cur}`);
+            var firstTime = chrono.parseDate("Today at 11:00 AM")-Date.now();
+            if(firstTime<0){
+                console.log("fail");
+                firstTime = chrono.parseDate("Tomorrow at 11:00 AM")-Date.now();
+            }
+            var ini = setTimeout(function () {
+                message.channel.send(atMention);
+                message.channel.send(reminderEmbed);
+                var daily = setInterval(function () {
+                    message.channel.send(atMention);
+                    message.channel.send(reminderEmbed);
+                }, 86400000);
+            }, firstTime);
+        }
+    }
+    else if (command === 'event') {
         if (args.length < 2) {
             message.channel.send("Error: too few arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CST)```");
         }
-        else if (chrono.strict.parseDate(args[0]) != null) {
+        else if (chrono.parseDate(args[0]) != null) {
             message.channel.send("Error: incompatible arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CST)```");
         }
         else {
@@ -42,7 +87,7 @@ client.on('message', message => {
             for (var i = 0; i < cur.length; i++) {
                 eventname += cur[i] + " ";
             }
-            if (chrono.strict.parseDate(args[0]) == null) {
+            if (chrono.parseDate(args[0]) == null) {
                 message.channel.send("Error: incompatible arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CST)```");
             }
             else {
@@ -64,22 +109,28 @@ client.on('message', message => {
                     }
                     given = given + ' ' + time;
                 }
+                var atMention = dict["content"];
+                if (args.length >= 1) {
+                    cur = args.shift().toLowerCase();
+                }
+                else {
+                    cur = null;
+                }
+                if (cur != null && dict[cur] != null) {
+                    at = dict[cur];
+                }
                 var sec;
                 var min;
                 var hour;
                 var day;
-                var at = dict["content"];
-                cur = args.shift().toLowerCase();
-                if(cur!=null && dict[cur]!=null){
-                    at=dict[cur];
-                }
                 var expiring = false;
                 function update() {
-                    sec = ((date - Date.now()) / 1000) - 21600;
+                    sec = ((date - Date.now()) / 1000) - 25200;
                     if (!given.includes(':')) {
                         sec = sec - 21600;
+                        // adjust for timezone
                     }
-                    if(expiring){
+                    if (expiring) {
                         sec = sec + 86400;
                     }
                     min = sec / 60;
@@ -96,8 +147,10 @@ client.on('message', message => {
                     .setDescription(`${given}`)
                     .addField(`Time left until ${eventname}:`, `${day} days, ${hour} hours, and ${min} minutes`);
                 var id = '810597400946409492';
-                if(message.channel.id == '808780763909849088'){
+                // default channel send
+                if (message.channel.id == '808780763909849088') {
                     id = '808780763909849088';
+                    //sends to noodle test channel
                 }
                 client.channels.cache.get(id).send(eventEmbed).then(msg => {
                     var ini = setTimeout(function () {
@@ -116,7 +169,7 @@ client.on('message', message => {
                                 eventEmbed = new Discord.MessageEmbed()
                                     .setTitle(`${eventname}`)
                                     .setDescription(`${given}`)
-                                    .addField(`Countdown for ${eventname}is over!`,`${hour} hours and ${min} minutes until this message expires`);
+                                    .addField(`Countdown for ${eventname}is over!`, `${hour} hours and ${min} minutes until this message expires`);
                                 msg.edit(eventEmbed).catch(error => {
                                     console.log("msg was already deleted & interval removed during expiring");
                                     clearInterval(up);
@@ -128,7 +181,7 @@ client.on('message', message => {
                                     clearInterval(up);
                                 }
                             }
-                            else{
+                            else {
                                 update();
                                 eventEmbed = new Discord.MessageEmbed()
                                     .setTitle(`${eventname}`)
@@ -141,7 +194,7 @@ client.on('message', message => {
                                 if (day <= 0 && hour <= 0 && min <= 0) {
                                     expiring = true;
                                     setTimeout(function () {
-                                        client.channels.cache.get(id).send(at).then(msga => {
+                                        client.channels.cache.get(id).send(atMention).then(msga => {
                                             setTimeout(function () {
                                                 msga.delete().catch(error => {
                                                     console.log("@ msg was already deleted");
