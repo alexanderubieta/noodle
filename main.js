@@ -46,12 +46,12 @@ client.on('message', message => {
             for (var i = 0; i < cur.length; i++) {
                 reminderName += cur[i] + " ";
             }
-            cur = args.shift().toLowerCase();
             var atMention = dict["content"];
+            cur = args.shift().toLowerCase();
             if (dict[cur]!=null) {
                 atMention=dict[cur];
             }
-            message.channel.send(`A reminder has been created in this channel for: \`\`\`${reminderName}\`\`\`every day at 11:00 AM Central time.`);
+            message.channel.send(`A reminder has been created in this channel for: \`\`\`${reminderName}\`\`\`every day at 11:00 AM (CDT).`);
             cur = "";
             while(args.length!=0){
                 cur += args.shift()+" ";
@@ -61,7 +61,6 @@ client.on('message', message => {
                 .setDescription(`${cur}`);
             var firstTime = chrono.parseDate("Today at 11:00 AM")-Date.now();
             if(firstTime<0){
-                console.log("fail");
                 firstTime = chrono.parseDate("Tomorrow at 11:00 AM")-Date.now();
             }
             var ini = setTimeout(function () {
@@ -76,10 +75,10 @@ client.on('message', message => {
     }
     else if (command === 'event') {
         if (args.length < 2) {
-            message.channel.send("Error: too few arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CST)```");
+            message.channel.send("Error: too few arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CDT)```");
         }
         else if (chrono.parseDate(args[0]) != null) {
-            message.channel.send("Error: incompatible arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CST)```");
+            message.channel.send("Error: incompatible arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CDT)```");
         }
         else {
             var cur = args.shift().split('-');
@@ -88,7 +87,7 @@ client.on('message', message => {
                 eventname += cur[i] + " ";
             }
             if (chrono.parseDate(args[0]) == null) {
-                message.channel.send("Error: incompatible arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CST)```");
+                message.channel.send("Error: incompatible arguments. Send event message in the following format: ```%event event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00 (which translates to MM/DD/YYYY 3PM CDT)```");
             }
             else {
                 var given = args.shift().toLowerCase();
@@ -98,26 +97,23 @@ client.on('message', message => {
                     given = given.split('-')[0];
                     if (time.split(':')[0] > 12) {
                         if (time.split(':')[0] == '24') {
-                            time = parseInt(time.split(':')[0]) - 12 + ':' + time.split(':')[1] + ' AM (CST)';
+                            time = parseInt(time.split(':')[0]) - 12 + ':' + time.split(':')[1] + ' AM (CDT)';
                         }
                         else {
-                            time = parseInt(time.split(':')[0]) - 12 + ':' + time.split(':')[1] + ' PM (CST)';
+                            time = parseInt(time.split(':')[0]) - 12 + ':' + time.split(':')[1] + ' PM (CDT)';
                         }
                     }
                     else {
-                        time = time + ' AM (CST)';
+                        time = time + ' AM (CDT)';
                     }
                     given = given + ' ' + time;
                 }
                 var atMention = dict["content"];
                 if (args.length >= 1) {
                     cur = args.shift().toLowerCase();
-                }
-                else {
-                    cur = null;
-                }
-                if (cur != null && dict[cur] != null) {
-                    at = dict[cur];
+                    if (dict[cur] != null) {
+                        atMention = dict[cur];
+                    }
                 }
                 var sec;
                 var min;
@@ -125,10 +121,14 @@ client.on('message', message => {
                 var day;
                 var expiring = false;
                 function update() {
-                    sec = ((date - Date.now()) / 1000) - 25200;
+                    sec = ((date - Date.now()) / 1000) - 21600;
                     if (!given.includes(':')) {
                         sec = sec - 21600;
                         // adjust for timezone
+                    }
+                    else{
+                        sec=sec-3600; 
+                        // needed for CDT time
                     }
                     if (expiring) {
                         sec = sec + 86400;
