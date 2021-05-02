@@ -3,6 +3,8 @@ const chrono = require('chrono-node');
 const { prefix, token } = require('./config.json');
 const client = new Discord.Client();
 var launch;
+var purge = false;
+var purgeName = [];
 var dict = {
     "everyone": `<@&813551519529959426>`,
     "genshin": `<@&765998462684495892>`,
@@ -19,6 +21,7 @@ var dict = {
     "minecraft": `<@&739733579914805368>`,
     "content": `<@&813551519529959426>`,
     "birthday": `<@&827107944134737963>`
+    //add more alternates later
 };
 
 client.once('ready', () => {
@@ -36,9 +39,29 @@ client.on('message', message => {
         elapsed = elapsed.toFixed(2);
         message.channel.send(`I've been online for ${elapsed} minutes`);
     }
+    else if (command === 'purge') {
+        if (args.length < 1) {
+            message.channel.send("Enter reminder name to purge");
+        }
+        else {
+            purge = true;
+            var input = args.shift().split('-');
+            if (input == "reset") {
+                purgeName = [];
+                purge = false;
+            }
+            else {
+                var base = "";
+                for (var i = 0; i < input.length; i++) {
+                    base += input[i] + " ";
+                }
+                purgeName.push(base);
+            }
+        }
+    }
     else if (command === 'reminder') {
-        if (args.length < 2) {
-            message.channel.send("Error: too few arguments. Send event message in the following format: ```%reminder reminder-name-seperated-by-dashes rolename link/description(optional)```");
+        if (args.length < 3) {
+            message.channel.send("Error: too few arguments. Send event message in the following format: ```%reminder reminder-name-seperated-by-dashes time rolename link/description(optional)```");
         }
         else {
             var cur = args.shift().split('-');
@@ -46,30 +69,53 @@ client.on('message', message => {
             for (var i = 0; i < cur.length; i++) {
                 reminderName += cur[i] + " ";
             }
+            cur = args.shift();
+            var firstTime = chrono.parseDate(`Today at ${cur}`) - Date.now();
+            if (firstTime == null) {
+                cur = "11:00";
+                firstTime = chrono.parseDate(`Today at ${cur}`) - Date.now();
+            }
+            if (firstTime < 0) {
+                firstTime = chrono.parseDate(`Tomorrow at ${cur}`) - Date.now();
+            }
+            message.channel.send(`A reminder has been created in this channel for: \`\`\`${reminderName}\`\`\`every day at ${cur} (CDT)`);
             var atMention = dict["content"];
             cur = args.shift().toLowerCase();
-            if (dict[cur]!=null) {
-                atMention=dict[cur];
+            if (dict[cur] != null) {
+                atMention = dict[cur];
             }
-            message.channel.send(`A reminder has been created in this channel for: \`\`\`${reminderName}\`\`\`every day at 11:00 AM (CDT).`);
             cur = "";
-            while(args.length!=0){
-                cur += args.shift()+" ";
+            while (args.length != 0) {
+                cur += args.shift() + " ";
             }
             var reminderEmbed = new Discord.MessageEmbed()
                 .setTitle(`${reminderName}`)
                 .setDescription(`${cur}`);
-            var firstTime = chrono.parseDate("Today at 11:00 AM")-Date.now();
-            if(firstTime<0){
-                firstTime = chrono.parseDate("Tomorrow at 11:00 AM")-Date.now();
-            }
             var ini = setTimeout(function () {
-                message.channel.send(atMention);
-                message.channel.send(reminderEmbed);
-                var daily = setInterval(function () {
+                if (purge && purgeName.indexOf(reminderName)!=-1) {
+                    purgeName.splice(purgeName.indexOf(reminderName),1);
+                    if(purgeName.length==0){
+                        purge = false;
+                    }
+                    clearTimeout(ini);
+                }
+                else {
                     message.channel.send(atMention);
                     message.channel.send(reminderEmbed);
-                }, 86400000);
+                    var daily = setInterval(function () {
+                        if (purge && purgeName.indexOf(reminderName)!=-1) {
+                            purgeName.splice(purgeName.indexOf(reminderName),1);
+                            if(purgeName.length==0){
+                                purge = false;
+                            }
+                            clearInterval(daily);
+                        }
+                        else {
+                            message.channel.send(atMention);
+                            message.channel.send(reminderEmbed);
+                        }
+                    }, 86400000);
+                }
             }, firstTime);
         }
     }
@@ -126,8 +172,8 @@ client.on('message', message => {
                         sec = sec - 21600;
                         // adjust for timezone
                     }
-                    else{
-                        sec=sec-3600; 
+                    else {
+                        sec = sec - 3600;
                         // needed for CDT time
                     }
                     if (expiring) {

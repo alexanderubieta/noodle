@@ -1,4 +1,4 @@
-# Noodle (v2.0)
+# Noodle (v2.3)
 
 A discord bot I created for my friends to use.
 
