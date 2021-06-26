@@ -88,7 +88,7 @@ client.on('message', message => {
         var remindDate = cur;
         //repition
         var daily = false;
-        cur = args.shift.toLowerCase();
+        cur = args.shift().toLowerCase();
         if (cur == 'daily') {
             daily = true;
         }
