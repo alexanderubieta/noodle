@@ -92,7 +92,7 @@ client.on('message', message => {
         if (cur == 'daily') {
             daily = true;
         }
-        if (cur != 'once') {
+        else if (cur != 'once') {
             message.channel.send("Error: incorrect arguments. Send message in the following format: ```%reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename id link/description(optional)```");
             return;
         }
