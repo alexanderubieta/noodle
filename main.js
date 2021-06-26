@@ -32,6 +32,11 @@ client.once('ready', () => {
     client.user.setActivity(`${entities} reminders & countdowns`, {
         type: "WATCHING",
     });
+    setInterval(function () {
+	client.user.setActivity(`${entities} reminders & countdowns`, {
+        	type: "WATCHING",
+    	});
+    }, 900000);
 });
 
 client.on('message', message => {
