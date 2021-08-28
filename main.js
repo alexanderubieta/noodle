@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
+const { Client, Intents } = require('discord.js');
+const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 const chrono = require('chrono-node');
 const { prefix, token } = require('./config.json');
-const client = new Discord.Client();
 var launch;
 var purge = false;
 var purgeName = [];
@@ -29,6 +29,10 @@ var dict = {
 client.once('ready', () => {
     launch = Date.now();
     console.log('Ready!');
+    // Set avatar
+    client.user.setAvatar('./noodleprime.jpg')
+        .then(user => console.log(`New avatar set!`))
+        .catch(console.error);
     client.user.setActivity(`${entities} reminders & countdowns`, {
         type: "WATCHING",
     });
@@ -66,7 +70,7 @@ client.on('message', message => {
     }
     else if (command === 'reminder') {
         if (args.length < 3) {
-            message.channel.send("Error: too few arguments. Send message in the following format: ```%reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename link/description(optional)```");
+            message.channel.send("Error: too few arguments. Send message in the following format: ```%reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename channelID  link/description(optional)```");
             return;
         }
         //name
