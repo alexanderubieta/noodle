@@ -36,6 +36,11 @@ client.once('ready', () => {
     client.user.setActivity(`${entities} reminders & countdowns`, {
         type: "WATCHING",
     });
+    setInterval(function () {
+	client.user.setActivity(`${entities} reminders & countdowns`, {
+        	type: "WATCHING",
+    	});
+    }, 900000);
 });
 
 client.on('message', message => {
@@ -92,11 +97,11 @@ client.on('message', message => {
         var remindDate = cur;
         //repition
         var daily = false;
-        cur = args.shift.toLowerCase();
+        cur = args.shift().toLowerCase();
         if (cur == 'daily') {
             daily = true;
         }
-        if (cur != 'once') {
+        else if (cur != 'once') {
             message.channel.send("Error: incorrect arguments. Send message in the following format: ```%reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename id link/description(optional)```");
             return;
         }

@@ -10,7 +10,7 @@ Usage:
 %reminder -
 Sends a daily reminder message at 11:00 AM CDT for a user defined reminder and pings users based on a specified role (limited to one ping per role for reminders occuring at the same time).
 Usage: 
-%reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename link/description(optional)
+%reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename id link/description(optional)
 
 %uptime -
 Displays how many minutes Noodle has been online.
