@@ -30,9 +30,9 @@ client.once('ready', () => {
     launch = Date.now();
     console.log('Ready!');
     // Set avatar
-    client.user.setAvatar('./noodleprime.jpg')
-        .then(user => console.log(`New avatar set!`))
-        .catch(console.error);
+    //client.user.setAvatar('./noodleprime.jpg')
+    //    .then(user => console.log(`New avatar set!`))
+    //    .catch(console.error);
     client.user.setActivity(`${entities} reminders & countdowns`, {
         type: "WATCHING",
     });
