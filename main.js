@@ -44,7 +44,7 @@ client.once('ready', () => {
     }, 900000);
 });
 
-client.on('message', message => {
+client.on('messageCreate', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
     const args = message.content.slice(prefix.length).trim().split(' ');
     const command = args.shift().toLowerCase();
@@ -157,7 +157,7 @@ client.on('message', message => {
                     bypass = true;
                     remindDict[pale] = true;
                 }
-                client.channels.cache.get(remindId).send(reminderEmbed);
+                client.channels.cache.get(remindId).send({ embeds: [reminderEmbed]});
                 if (daily) {
                     var repeat = setInterval(function () {
                         if (purge && purgeName.indexOf(reminderName) != -1) {
@@ -175,7 +175,7 @@ client.on('message', message => {
                                 bypass = true;
                                 remindDict[pale] = true;
                             }
-                            client.channels.cache.get(remindId).send(reminderEmbed);
+                            client.channels.cache.get(remindId).send({ embeds: [reminderEmbed]});
                         }
                     }, 86400000);
                 }
@@ -265,7 +265,7 @@ client.on('message', message => {
         }
         //update active events
         entities++;
-        client.channels.cache.get(id).send(eventEmbed).then(msg => {
+        client.channels.cache.get(id).send({ embeds: [eventEmbed]}).then(msg => {
             var ini = setTimeout(function () {
                 update();
                 eventEmbed = new Discord.MessageEmbed()
