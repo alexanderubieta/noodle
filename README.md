@@ -8,7 +8,7 @@ Usage:
 %countdown event-name-seperated-by-dashes MM/DD/YYYY or MM/DD/YYYY-15:00(if time is needed)
 
 %reminder -
-Sends a daily reminder message at 11:00 AM CDT for a user defined reminder and pings users based on a specified role (limited to one ping per role for reminders occuring at the same time).
+Sends a daily reminder message at a specified time (in CT) for a user defined reminder and pings users based on a specified role (limited to one ping per role for reminders occuring at the same time).
 Usage: 
 %reminder reminder-name-seperated-by-dashes date/time repition(once/daily) rolename id link/description(optional)
 
